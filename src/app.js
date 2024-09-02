@@ -1,62 +1,15 @@
 import express from 'express';
+import cartsRouter from './routes/carts.router.js';
+import productsRouter from './routes/products.router.js';
+import __dirname from './utils.js';
 
 const app = express();
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => console.log(`ESCUCHANDO EN ${PORT}`))
 
-const users = [
-    {
-        id:1,
-        firstName: "Juana",
-        lastName: "pepa"
-    },
-    {
-        id:2,
-        firstName: "esteban",
-        lastName: "ffernandez"
-    },
-    {
-        id:3,
-        firstName:"Juana",
-        lastName:"pai"
-    },
-    {
-        id:4,
-        firstName:"esteban",
-        lastName:"ffernandez"
-    }
-]
-
-app.get('/', (request, response) => {
-    response.send("hola express");
-})
-app.get('/users', (req, res) => {
-    console.log(req.query)
-    const {name} = req.query;
-    if(!name){
-        return res.send({
-        users: users
-    });
-    }
-    else{
-        const filteredUsers = users.filter(u=>u.firstName === name);
-        return res.send({
-            users:filteredUsers
-        })
-    }
-  
-})
-
-app.get('/users/:uid/', (req, res) => {
-    console.log(req.params)
-    const { uid } = req.params;
-    const userId = parseInt(uid);
-    const user = users.find(u => u.id === userId);
-    if (user) {
-        res.send(user);
-    } else {
-        res.send("usuario no encontrado");
-    }
-})
+app.use(express.static(`${__dirname}/public`));
+app.use('/api/products', productsRouter)
+app.use('/api/carts',cartsRouter)
+app.use(express.json())
